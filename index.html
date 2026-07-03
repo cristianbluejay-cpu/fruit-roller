@@ -252,13 +252,20 @@
                 <div class="rarity-subtext">Press Roll</div>
             </div>
         </div>
+
+        <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #252533; font-size: 13px; color: #a0a0ab;">
+            <p style="margin-bottom: 8px; font-weight: 500;">Please support us to make this game better!</p>
+            <a href="https://www.paypal.com" target="_blank" style="color: #ffaa00; text-decoration: none; font-weight: bold; transition: opacity 0.2s; display: inline-block;">
+                💛 Support via PayPal
+            </a>
+        </div>
     </div>
 
     <div class="panels-container">
         <div class="panel">
             <h2>🤢 Feed the Slime Pit</h2>
             <div class="points-display">Slime Balance: <span id="slime-shop-points">0</span> SP</div>
-            <div style="font-size: 12px; color: #aaa; margin-bottom: 15px; text-align: center;">Feed your fruits to the hungry Slime to gain Slime Points (SP)! Rarier fruits yield significantly more points.</div>
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 15px; text-align: center;">Feed your fruits to the hungry Slime to gain Slime Points (SP)! Rarer fruits yield significantly more points.</div>
             <div id="slime-feed-list"></div>
             
             <h3 style="border-top: 1px solid #252533; padding-top: 15px; margin-top: 15px; font-size: 16px;">🧪 Slime Rewards Shop</h3>
@@ -277,9 +284,8 @@
     </div>
 
     <script>
-        // Updated Pool: Added Poison Apple (1 in 50,000)
         const fruitPool = [
-            { id: "apple",        name: "🍎 Apple",         weight: 6000, rarityText: "1 in 2",   style: "common" },
+            { id: "apple",        name: "🍎 Apple",        weight: 6000, rarityText: "1 in 2",   style: "common" },
             { id: "banana",       name: "🍌 Banana",        weight: 3500, rarityText: "1 in 3",   style: "common" },
             { id: "pear",         name: "🍐 Pear",          weight: 2500, rarityText: "1 in 5",   style: "common" },
             { id: "orange",       name: "🍊 Orange",        weight: 1800, rarityText: "1 in 7",   style: "uncommon" },
@@ -300,7 +306,6 @@
             { id: "poisonapple",  name: "🍏 Poison Apple",  weight: 0.3,  rarityText: "1 in 50,000",style: "mythical" }
         ];
 
-        // Game States & Tracking
         let totalRolls = 0;
         let unlockedMaxLuck = 1.0;
         let selectedLuckValue = 1.0;
@@ -310,15 +315,13 @@
         let upgradedAnimationLevel = 0;
         let mutationMasteryLevel = 0; 
         
-        // Slime Points States
         let slimePoints = 0;
-        let slimeEfficiencyLevel = 0; // Permanent shop upgrade
+        let slimeEfficiencyLevel = 0;
 
         let autoRollInterval = null;
         let isRolling = false;
         let pendingMutationTarget = null;
 
-        // Inventory Systems
         const inventory = {};
         const mutationsInventory = {}; 
         
@@ -327,7 +330,6 @@
             mutationsInventory[f.id] = { silver: 0, gold: 0, diamond: 0, heavenly: 0 };
         });
 
-        // DOM Connectors
         const rollBtn = document.getElementById("roll-button");
         const autoBtn = document.getElementById("auto-button");
         const mutateTriggerBtn = document.getElementById("mutate-trigger-btn");
@@ -344,7 +346,6 @@
         const slimeFeedList = document.getElementById("slime-feed-list");
         const slimeShopList = document.getElementById("slime-shop-list");
 
-        // Main Upgrade Shop Config
         const shopConfig = [
             { id: "luck", name: "Super Luck Charm", max: 5, getCost: (lvl) => [ { id: "apple", qty: 5 }, { id: "orange", qty: 5 }, { id: "grapes", qty: 4 }, { id: "melon", qty: 3 }, { id: "avocado", qty: 1 } ][lvl] },
             { id: "autoroll", name: "Industrial Auto Roller Engine", max: 1, getCost: () => ({ id: "pear", qty: 6 }) },
@@ -353,19 +354,17 @@
             { id: "mutation", name: "Mutation Mastery (+Chance & Tier Boost)", max: 3, getCost: (lvl) => [ { id: "cherries", qty: 8 }, { id: "watermelon", qty: 6 }, { id: "durian", qty: 2 } ][lvl] }
         ];
 
-        // Slime Point Rewards Shop
         const slimeShopConfig = [
             { id: "efficiency", name: "Mutated Stomach (Double Feed Value)", max: 1, cost: 250, desc: "Slime grants 2x points permanently for all eaten items." },
             { id: "luck_boost", name: "Slime's Blessing (+1.0x Permanent Luck)", max: 2, cost: 600, desc: "Increases max tuning potential directly." }
         ];
 
-        // Point value engine calculation based on rarity inverse weight
         function getFruitSlimeValue(fruit) {
             let baseValue = 1;
             if(fruit.weight > 0) {
                 baseValue = Math.ceil(12000 / fruit.weight);
             }
-            if (slimeEfficiencyLevel > 0) baseValue *= 2; // Apply upgrade multiplier
+            if (slimeEfficiencyLevel > 0) baseValue *= 2;
             return baseValue;
         }
 
@@ -402,7 +401,7 @@
             slimeShopConfig.forEach(item => {
                 let currentLvl = 0;
                 if(item.id === "efficiency") currentLvl = slimeEfficiencyLevel;
-                if(item.id === "luck_boost") currentLvl = (unlockedMaxLuck - 1.0 - (luckLevel * 0.5)) / 1.0; // tracks how many slime levels bought
+                if(item.id === "luck_boost") currentLvl = (unlockedMaxLuck - 1.0 - (luckLevel * 0.5)) / 1.0;
                 
                 if (currentLvl >= item.max) return;
 
@@ -424,7 +423,6 @@
             }
         }
 
-        // Slime Event Interactions
         slimeFeedList.addEventListener("click", (e) => {
             if (!e.target.classList.contains("feed-btn")) return;
             const id = e.target.getAttribute("data-id");
@@ -563,7 +561,7 @@
                 } else if (id === "slots") {
                     activeRollSlots++;
                     slotsStat.innerText = activeRollSlots;
-                    syncSlotsLayout(); // FIXED BUG: Physically adds the slot block to the board immediately!
+                    syncSlotsLayout();
                 } else if (id === "mutation") {
                     mutationMasteryLevel++;
                 }
@@ -600,7 +598,6 @@
             return fruitPool[0];
         }
 
-        // Structural layout update system
         function syncSlotsLayout() {
             slotsBoard.innerHTML = "";
             for (let i = 0; i < activeRollSlots; i++) {
@@ -722,8 +719,7 @@
                 <div class="fruit-name">${pendingMutationTarget.name.split(" ")[0]}</div>
                 <div class="rarity-subtext" style="font-size:14px; font-weight:bold;">✨ ${tier.toUpperCase()} MUTATION! ✨</div>
             `;
-
-            pendingMutationTarget = null;
+            
             drawIndexUI();
             drawSlimeFeedUI();
             drawShopUI();
@@ -732,29 +728,25 @@
         rollBtn.addEventListener("click", executeGachaRoll);
 
         autoBtn.addEventListener("click", () => {
-            if (autoRollInterval !== null) {
+            if (autoRollInterval === null) {
+                autoRollInterval = setInterval(() => {
+                    if (!isRolling) executeGachaRoll();
+                }, 1000);
+                autoBtn.innerText = "Disable Auto Roll";
+                autoBtn.classList.add("auto-active");
+            } else {
                 clearInterval(autoRollInterval);
                 autoRollInterval = null;
                 autoBtn.innerText = "Enable Auto Roll";
                 autoBtn.classList.remove("auto-active");
                 if (!isRolling) rollBtn.disabled = false;
-            } else {
-                autoBtn.innerText = "Disable Auto Roll";
-                autoBtn.classList.add("auto-active");
-                rollBtn.disabled = true;
-                executeGachaRoll();
-                autoRollInterval = setInterval(() => {
-                    if (!isRolling && mutateTriggerBtn.style.display !== "inline-block") executeGachaRoll();
-                }, 1200);
             }
         });
 
-        // Initialize App
         drawIndexUI();
         drawShopUI();
         drawSlimeFeedUI();
         drawSlimeShopUI();
     </script>
-
 </body>
 </html>
